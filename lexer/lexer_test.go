@@ -11,7 +11,7 @@ type expectedItem struct {
 }
 
 func TestNextTokenV1(t *testing.T) {
-	input := `=+(){},;`
+	input := `=+(){},;!-/*<>`
 
 	tests := []expectedItem{
 		{token.ASSIGN, "="},
@@ -22,6 +22,12 @@ func TestNextTokenV1(t *testing.T) {
 		{token.RBRACE, "}"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.BANG, "!"},
+		{token.MINUS, "-"},
+		{token.SLASH, "/"},
+		{token.ASTERISK, "*"},
+		{token.LT, "<"},
+		{token.GT, ">"},
 		{token.EOF, ""},
 	}
 
