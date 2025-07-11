@@ -2,7 +2,7 @@ package lexer
 
 import "github.com/limyel/myinterpreter/token"
 
-// Lexer 词法分析器
+// Lexer 词法分析器，
 // todo 支持 Unicode 字符
 type Lexer struct {
 	input        string
@@ -30,7 +30,16 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
-// readIdentifier 读取标识符
+// pickChar 预览下一个字符
+func (l *Lexer) pickChar() byte {
+	if l.readPosition >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
+}
+
+// readIdentifier 读取标识符字符串
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 	for isLetter(l.ch) {
@@ -39,6 +48,7 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
+// readNumber 读取数字字符串
 func (l *Lexer) readNumber() string {
 	position := l.position
 	for isDigit(l.ch) {
@@ -55,7 +65,17 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		tok = token.New(token.ASSIGN, l.ch)
+		if l.pickChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{
+				Type:    token.EQ,
+				Literal: literal,
+			}
+		} else {
+			tok = token.New(token.ASSIGN, l.ch)
+		}
 	case ';':
 		tok = token.New(token.SEMICOLON, l.ch)
 	case '(':
@@ -73,7 +93,17 @@ func (l *Lexer) NextToken() token.Token {
 	case '-':
 		tok = token.New(token.MINUS, l.ch)
 	case '!':
-		tok = token.New(token.BANG, l.ch)
+		if l.pickChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{
+				Type:    token.NOT_EQ,
+				Literal: literal,
+			}
+		} else {
+			tok = token.New(token.BANG, l.ch)
+		}
 	case '*':
 		tok = token.New(token.ASTERISK, l.ch)
 	case '/':
